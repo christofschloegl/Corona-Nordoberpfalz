@@ -1,1 +1,1 @@
-[logo]: dashboard.png
+![Dashboard](dashboard.png)

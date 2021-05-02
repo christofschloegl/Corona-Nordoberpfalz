@@ -4,9 +4,11 @@
     canvas {
         height: 100% !important;
     }
+    table, th, td {
+        border: 1px solid black;
+    }
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.1/dist/chart.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.7.0"></script>
 
@@ -15,14 +17,29 @@
     var landkreise = [];
     var inzidezen = [];
 
+
+    // Get RKI Data
     $.getJSON( "https://services7.arcgis.com/mOBPykOjAyBO2ZKk/arcgis/rest/services/RKI_Landkreisdaten/FeatureServer/0/query?where=1%3D1&objectIds=262%2C266%2C267%2C264%2C258%2C260%2C263&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&returnCentroid=false&featureEncoding=esriDefault&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnUniqueIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnQueryGeometry=false&returnDistinctValues=false&cacheHint=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=standard&f=pjson&token=", function( data ) {
-        var items = [];
+       
+
+        // Calculate Incidences
+        var landkreise = [];
+        var inzidezen = [];
+
         $.each( data.features, function( key, val ) {
             landkreise.push(val.attributes["GEN"]);
             inzidezen.push(val.attributes["cases7_per_100k_txt"].replace(",","."));
+
+            // Append Table Data
+
+            $("body").append( '<tr><td>'+val.attributes["GEN"]+'</td><td>'+val.attributes["cases7_per_100k_txt"]+'</td></tr>' );
         });
-        $(items.join( "" )).appendTo( "body" );
-        console.log(inzidezen);
+
+        // Append Chart
+        $("body").append('<div class="chart-container" style="position: relative; height:90vh; width:80vw"><canvas id="chart"></canvas></div>');
+
+
+        // Show Chart
         $( document ).ready(function() {
         var ctx = document.getElementById("chart").getContext('2d');
             var myChart = new Chart(ctx, {
@@ -71,9 +88,6 @@
 });
 </script>
 </head>
-<body>
-    <div class="chart-container" style="position: relative; height:90vh; width:80vw">
-        <canvas id="chart"></canvas>
-    </div>    
+<body>  
 </body>
 </html>
